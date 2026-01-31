@@ -1,0 +1,177 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  background: #f4f6f8;
+  color: #222;
+}
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #0b2c4d, #061a2e);
+  color: white;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.header h1 {
+  font-size: 36px;
+  letter-spacing: 2px;
+}
+
+/* HERO */
+.hero-images {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: #fff;
+}
+
+.hero-images img {
+  max-width: 500px;
+  width: 100%;
+  margin: 10px;
+  border-radius: 12px;
+}
+
+/* SECTIONS */
+.section {
+  padding: 50px 20px;
+  background: #fff;
+}
+
+.section.light {
+  background: #f0f3f7;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #0b2c4d;
+}
+
+/* COUNTRIES */
+.countries {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.country-card {
+  height: 260px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.4s ease;
+}
+
+.country-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  transition: background 0.4s;
+}
+
+.country-card:hover {
+  transform: scale(1.05);
+}
+
+.country-card:hover::before {
+  background: rgba(0,0,0,0.25);
+}
+
+.country-card h3 {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: #fff;
+  font-size: 24px;
+  text-shadow: 0 0 12px gold;
+}
+
+/* JOBS */
+.jobs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.job-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  font-weight: 500;
+}
+
+.salary {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* FORM */
+.apply-form {
+  max-width: 400px;
+  margin: auto;
+}
+
+.apply-form input,
+.apply-form button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.apply-form button {
+  background: #0b2c4d;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.apply-form button:hover {
+  background: #083055;
+}
+
+/* FOOTER */
+footer {
+  background: #0b2c4d;
+  color: white;
+  text-align: center;
+  padding: 25px 15px;
+}
+
+.disclaimer {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 10px;
+}
+
+/* WHATSAPP */
+.whatsapp {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: #25D366;
+  color: white;
+  font-size: 26px;
+  padding: 14px;
+  border-radius: 50%;
+  text-decoration: none;
+  box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}

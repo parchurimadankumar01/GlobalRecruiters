@@ -1,0 +1,15 @@
+global-recruiters
+│
+├── index.html
+├── admin.html
+│
+├── css
+│   └── style.css
+│
+├── js
+│   ├── firebase.js   👈 (THIS FILE)
+│   ├── main.js
+│   └── admin.js
+│
+└── images
+    └── (your images here)
