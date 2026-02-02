@@ -1,155 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Country Jobs – Global Recruiters</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Country Jobs</title>
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="index.html">
-      <i class="bi bi-globe"></i> Global Recruiters
-    </a>
+<div class="container mt-4">
+  <h3 id="countryTitle"></h3>
+  <div id="jobList" class="d-flex gap-3 overflow-auto"></div>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="mainNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="country.html?country=dubai">Dubai</a></li>
-        <li class="nav-item"><a class="nav-link" href="country.html?country=saudi">Saudi</a></li>
-        <li class="nav-item"><a class="nav-link" href="country.html?country=kuwait">Kuwait</a></li>
-        <li class="nav-item"><a class="nav-link" href="country.html?country=oman">Oman</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<!-- ================= COUNTRY HEADER ================= -->
-<section class="container text-center mt-4">
-  <h2 id="countryTitle">Country Jobs</h2>
-  <p class="text-muted">Latest job vacancies for this country</p>
-</section>
-
-<!-- ================= JOB SCROLL SECTION ================= -->
-<section class="container mt-4">
-  <h4 class="mb-3">Available Job Roles</h4>
-
-  <div class="d-flex overflow-auto gap-3 pb-3" id="jobList">
-    <!-- Jobs will load here dynamically -->
-  </div>
-</section>
-
-<!-- ================= APPLY FORM ================= -->
-<section class="container mt-5">
-  <h3 class="text-center mb-3">Apply for This Country</h3>
-
-  <form id="applyForm" class="mx-auto" style="max-width:400px">
-    <input class="form-control mb-2" type="text" id="name" placeholder="Full Name" required>
-    <input class="form-control mb-2" type="text" id="job" placeholder="Job Role" required>
-    <input class="form-control mb-2" type="email" id="email" placeholder="Email Address" required>
-    <input class="form-control mb-3" type="tel" id="phone" placeholder="Mobile Number" required>
-
-    <button class="btn btn-dark w-100" type="submit">
-      <i class="bi bi-send"></i> Submit Application
-    </button>
+  <form id="applyForm" class="mt-4" style="max-width:400px">
+    <input id="name" class="form-control mb-2" placeholder="Name" required>
+    <input id="job" class="form-control mb-2" placeholder="Select Job" readonly required>
+    <input id="email" class="form-control mb-2" placeholder="Email" required>
+    <input id="phone" class="form-control mb-2" placeholder="Phone" required>
+    <button class="btn btn-dark w-100">Apply</button>
   </form>
+</div>
 
-  <div class="text-center mt-3">
-    <a href="index.html" class="btn btn-outline-secondary">
-      <i class="bi bi-arrow-left"></i> Back to Home
-    </a>
-  </div>
-</section>
-
-<!-- ================= FOOTER ================= -->
-<footer class="bg-dark text-white text-center mt-5 p-4">
-  <p>📞 Madan: +91 8328055863 | Sandya: +91 8247086151</p>
-  <p>📧 globalrecruitersforwork@gmail.com</p>
-  <small>
-    We are recruitment consultants only. Visa approval depends on employer and embassy rules.
-  </small>
-</footer>
-
-<!-- ================= FIREBASE ================= -->
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
+<!-- Firebase Init -->
 <script src="js/firebase.js"></script>
 
-<!-- ================= COUNTRY JS ================= -->
+<!-- Page Logic -->
+<script src="js/admin.js"></script>
+<!-- OR -->
+<script src="js/main.js"></script>
+
+
 <script>
-  const params = new URLSearchParams(window.location.search);
-  const country = params.get("country");
+const params = new URLSearchParams(location.search);
+const country = params.get("country");
 
-  document.getElementById("countryTitle").innerText =
-    country.charAt(0).toUpperCase() + country.slice(1) + " Job Vacancies";
+countryTitle.innerText = country.toUpperCase() + " Jobs";
 
-  // Load jobs for selected country
-  db.collection("jobs")
-    .where("country", "==", country)
-    .onSnapshot(snapshot => {
-      const jobList = document.getElementById("jobList");
-      jobList.innerHTML = "";
-
-      snapshot.forEach(doc => {
-        const job = doc.data();
-
-        jobList.innerHTML += `
-          <div class="card shadow-sm" style="min-width:220px">
-            <div class="card-body">
-              <h6 class="card-title">${job.role}</h6>
-              ${
-                job.emergency
-                ? '<span class="badge bg-danger">Emergency • 15 Days Visa</span>'
-                : '<span class="badge bg-success">Normal Process</span>'
-              }
-            </div>
-          </div>
-        `;
-      });
-    });
-
-  // Apply form submit
-  document.getElementById("applyForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const name = document.getElementById("name").value;
-    const job = document.getElementById("job").value;
-    const email = document.getElementById("email").value;
-    const phone = document.getElementById("phone").value;
-
-    await db.collection("applications").add({
-      name,
-      job,
-      email,
-      phone,
-      country,
-      createdAt: firebase.firestore.Timestamp.now()
-    });
-
-    alert("Application submitted successfully!");
-    window.location.href = "index.html";
+db.collection("jobs")
+.where("country","==",country)
+.onSnapshot(snap=>{
+  jobList.innerHTML="";
+  snap.forEach(d=>{
+    const j=d.data();
+    jobList.innerHTML+=`
+      <div class="card p-3" style="min-width:200px;cursor:pointer"
+        onclick="job.value='${j.title}'">
+        <b>${j.title}</b>
+        ${j.emergency?'<span class="badge bg-danger">Emergency</span>':''}
+      </div>`;
   });
-</script>
+});
 
-<!-- ================= BOOTSTRAP JS ================= -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+applyForm.addEventListener("submit",async e=>{
+  e.preventDefault();
+  await db.collection("applications").add({
+    name:name.value,
+    job:job.value,
+    email:email.value,
+    phone:phone.value,
+    country,
+    createdAt:firebase.firestore.Timestamp.now()
+  });
+  alert("Applied Successfully");
+});
+</script>
 
 </body>
 </html>

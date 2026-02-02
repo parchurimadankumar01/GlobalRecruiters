@@ -1,137 +1,81 @@
-// ==========================
-// FIRESTORE REFERENCES
-// ==========================
 const jobsRef = db.collection("jobs");
 const appsRef = db.collection("applications");
 
 const jobsList = document.getElementById("jobsList");
-const appTableBody = document.querySelector("#appTable tbody");
+const appTable = document.querySelector("#appTable tbody");
 const searchInput = document.getElementById("searchInput");
 
-// ==========================
 // ADD JOB
-// ==========================
 async function addJob() {
-  const role = document.getElementById("jobRole").value.trim();
-  const country = document.getElementById("jobCountry").value;
-  const emergency = document.getElementById("emergency").checked;
+  const title = jobRole.value.trim();
+  const country = jobCountry.value;
+  const emergency = emergency.checked;
 
-  if (!role) {
-    alert("Enter Job Role");
-    return;
-  }
+  if (!title) return alert("Enter job title");
 
   await jobsRef.add({
-    title: role,
+    title,
     country,
     emergency,
     createdAt: firebase.firestore.Timestamp.now()
   });
 
-  document.getElementById("jobRole").value = "";
-  document.getElementById("emergency").checked = false;
-
-  alert("Job Added Successfully");
+  jobRole.value = "";
+  emergency.checked = false;
 }
 
-// ==========================
-// LOAD JOBS (LIVE)
-// ==========================
-function loadJobs() {
-  jobsRef.orderBy("createdAt", "desc").onSnapshot(snapshot => {
-    jobsList.innerHTML = "";
-
-    snapshot.forEach(doc => {
-      const job = doc.data();
-
-      jobsList.innerHTML += `
-        <div class="card p-3 shadow-sm" style="min-width:240px">
-          <strong>${job.title}</strong>
-          <div class="text-muted">${job.country.toUpperCase()}</div>
-
-          ${
-            job.emergency
-              ? `<span class="badge bg-danger mt-2">Emergency • 15 Days</span>`
-              : `<span class="badge bg-success mt-2">Normal</span>`
-          }
-
-          <button class="btn btn-sm btn-outline-danger mt-2"
-            onclick="deleteJob('${doc.id}')">
-            Delete
-          </button>
-        </div>
-      `;
-    });
-
-    if (snapshot.empty) {
-      jobsList.innerHTML = `<p class="text-muted">No jobs yet</p>`;
-    }
-  });
-}
-
-// ==========================
-// DELETE JOB
-// ==========================
-async function deleteJob(id) {
-  if (!confirm("Delete this job?")) return;
-  await jobsRef.doc(id).delete();
-}
-
-// ==========================
-// LOAD APPLICATIONS
-// ==========================
-function loadApplications() {
-  appsRef.orderBy("createdAt", "desc").onSnapshot(snapshot => {
-    appTableBody.innerHTML = "";
-
-    snapshot.forEach(doc => {
-      const a = doc.data();
-
-      appTableBody.innerHTML += `
-        <tr>
-          <td>${a.name}</td>
-          <td>${a.job}</td>
-          <td>${a.email}</td>
-          <td>${a.phone}</td>
-          <td>${a.country || "-"}</td>
-        </tr>
-      `;
-    });
-  });
-}
-
-// ==========================
-// SEARCH APPLICATIONS
-// ==========================
-searchInput.addEventListener("input", () => {
-  const value = searchInput.value.toLowerCase();
-  document.querySelectorAll("#appTable tbody tr").forEach(row => {
-    row.style.display = row.innerText.toLowerCase().includes(value)
-      ? ""
-      : "none";
+// LOAD JOBS
+jobsRef.orderBy("createdAt", "desc").onSnapshot(snap => {
+  jobsList.innerHTML = "";
+  snap.forEach(doc => {
+    const j = doc.data();
+    jobsList.innerHTML += `
+      <div class="card p-3" style="min-width:220px">
+        <b>${j.title}</b>
+        <div>${j.country.toUpperCase()}</div>
+        ${j.emergency ? `<span class="badge bg-danger">Emergency</span>` : ""}
+        <button class="btn btn-sm btn-danger mt-2"
+          onclick="jobsRef.doc('${doc.id}').delete()">Delete</button>
+      </div>
+    `;
   });
 });
 
-// ==========================
-// EXPORT EXCEL
-// ==========================
+// LOAD APPLICATIONS
+appsRef.orderBy("createdAt", "desc").onSnapshot(snap => {
+  appTable.innerHTML = "";
+  snap.forEach(doc => {
+    const a = doc.data();
+    appTable.innerHTML += `
+      <tr>
+        <td>${a.name}</td>
+        <td>${a.job}</td>
+        <td>${a.email}</td>
+        <td>${a.phone}</td>
+        <td>${a.country}</td>
+      </tr>
+    `;
+  });
+});
+
+// SEARCH
+searchInput.addEventListener("input", () => {
+  const v = searchInput.value.toLowerCase();
+  document.querySelectorAll("#appTable tbody tr").forEach(r => {
+    r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none";
+  });
+});
+
+// EXPORT
 function exportExcel() {
   let csv = "Name,Job,Email,Phone,Country\n";
-
-  document.querySelectorAll("#appTable tbody tr").forEach(row => {
-    const cols = row.querySelectorAll("td");
-    csv += [...cols].map(c => `"${c.innerText}"`).join(",") + "\n";
+  document.querySelectorAll("#appTable tbody tr").forEach(r => {
+    csv += [...r.children].map(td => `"${td.innerText}"`).join(",") + "\n";
   });
 
-  const blob = new Blob([csv], { type: "text/csv" });
+  const blob = new Blob([csv]);
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "applications.csv";
   a.click();
 }
-
-// ==========================
-// INIT
-// ==========================
-loadJobs();
-loadApplications();
