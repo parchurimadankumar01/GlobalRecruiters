@@ -8,6 +8,7 @@
 body {
   background: #f4f6f8;
   color: #222;
+  overflow: auto;
 }
 
 /* HEADER */
