@@ -1,84 +1,60 @@
-// ==========================
-// APPLY FORM SUBMIT (SAFE)
-// ==========================
-const applyForm = document.getElementById("applyForm");
+document.getElementById("applyForm")?.addEventListener("submit", async function (e) {
+  e.preventDefault();
 
-if (applyForm) {
-  applyForm.addEventListener("submit", async function (e) {
-    e.preventDefault();
+  const name = document.getElementById("name").value.trim();
+  const job = document.getElementById("job").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
 
-    const name = document.getElementById("name")?.value.trim();
-    const job = document.getElementById("job")?.value.trim();
-    const email = document.getElementById("email")?.value.trim();
-    const phone = document.getElementById("phone")?.value.trim();
+  const params = new URLSearchParams(window.location.search);
+  const country = params.get("country") || "General";
 
-    // Get country from URL (country.html) or fallback
-    const params = new URLSearchParams(window.location.search);
-    const country = (params.get("country") || "general").toLowerCase();
+  if (!name || !job || !email || !phone) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    if (!name || !job || !email || !phone) {
-      alert("Please fill all fields");
-      return;
-    }
-
-    console.log("Submitting application:", {
+  try {
+    // 1️⃣ SAVE APPLICATION TO FIRESTORE
+    await db.collection("applications").add({
       name,
       job,
       email,
       phone,
-      country
+      country,
+      createdAt: firebase.firestore.Timestamp.now()
     });
 
-    try {
-      // ==========================
-      // 1️⃣ SAVE TO FIRESTORE
-      // ==========================
-      const docRef = await db.collection("applications").add({
+    // 2️⃣ SEND EMAIL TO ADMIN
+    await emailjs.send(
+      "service_hn1conq",      // your service ID
+      "template_pjll5to",     // admin template
+      {
         name,
         job,
         email,
         phone,
-        country,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+        country
+      }
+    );
 
-      console.log("Application saved:", docRef.id);
+    // 3️⃣ SEND AUTO-REPLY TO USER ✅
+    await emailjs.send(
+      "service_hn1conq",      // same service
+      "template_35cruuo",     // AUTO-REPLY template
+      {
+        name,
+        job,
+        email,                // VERY IMPORTANT (user email)
+        country
+      }
+    );
 
-      // ==========================
-      // 2️⃣ EMAIL TO ADMIN
-      // ==========================
-      await emailjs.send(
-        "service_hn1conq",      // admin service
-        "template_pjll5to",     // admin template
-        {
-          name,
-          job,
-          email,
-          phone,
-          country
-        }
-      );
+    alert("Application submitted successfully!");
+    e.target.reset();
 
-      // ==========================
-      // 3️⃣ AUTO-REPLY TO USER ✅
-      // ==========================
-      await emailjs.send(
-        "service_hn1conq",
-        "template_user_reply", // ⬅️ create this in EmailJS
-        {
-          to_email: email,
-          to_name: name,
-          job: job,
-          country: country.toUpperCase()
-        }
-      );
-
-      alert("✅ Application submitted successfully!");
-      applyForm.reset();
-
-    } catch (error) {
-      console.error("Application submit error:", error);
-      alert("❌ Something went wrong. Please try again.");
-    }
-  });
-}
+  } catch (error) {
+    console.error("Submission error:", error);
+    alert("Something went wrong. Please try again.");
+  }
+});
