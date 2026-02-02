@@ -1,60 +1,34 @@
-document.getElementById("applyForm")?.addEventListener("submit", async function (e) {
-  e.preventDefault();
+db.collection("countries").onSnapshot(snap => {
+  const list = document.getElementById("countryList");
+  const nav = document.getElementById("navCountries");
 
-  const name = document.getElementById("name").value.trim();
-  const job = document.getElementById("job").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const phone = document.getElementById("phone").value.trim();
+  if (!list || !nav) return;
 
-  const params = new URLSearchParams(window.location.search);
-  const country = params.get("country") || "General";
+  list.innerHTML = "";
+  nav.innerHTML = `
+    <li class="nav-item">
+      <a class="nav-link active" href="index.html">Home</a>
+    </li>`;
 
-  if (!name || !job || !email || !phone) {
-    alert("Please fill all fields");
-    return;
-  }
+  snap.forEach(doc => {
+    const c = doc.data();
 
-  try {
-    // 1️⃣ SAVE APPLICATION TO FIRESTORE
-    await db.collection("applications").add({
-      name,
-      job,
-      email,
-      phone,
-      country,
-      createdAt: firebase.firestore.Timestamp.now()
-    });
+    // cards
+    list.innerHTML += `
+      <div class="col-md-3">
+        <a href="country.html?country=${c.code}" class="text-decoration-none">
+          <div class="country-card text-center p-4">
+            <h4>${c.name}</h4>
+          </div>
+        </a>
+      </div>`;
 
-    // 2️⃣ SEND EMAIL TO ADMIN
-    await emailjs.send(
-      "service_hn1conq",      // your service ID
-      "template_pjll5to",     // admin template
-      {
-        name,
-        job,
-        email,
-        phone,
-        country
-      }
-    );
-
-    // 3️⃣ SEND AUTO-REPLY TO USER ✅
-    await emailjs.send(
-      "service_hn1conq",      // same service
-      "template_35cruuo",     // AUTO-REPLY template
-      {
-        name,
-        job,
-        email,                // VERY IMPORTANT (user email)
-        country
-      }
-    );
-
-    alert("Application submitted successfully!");
-    e.target.reset();
-
-  } catch (error) {
-    console.error("Submission error:", error);
-    alert("Something went wrong. Please try again.");
-  }
+    // navbar
+    nav.innerHTML += `
+      <li class="nav-item">
+        <a class="nav-link" href="country.html?country=${c.code}">
+          ${c.name}
+        </a>
+      </li>`;
+  });
 });

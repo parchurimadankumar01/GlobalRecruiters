@@ -1,64 +1,64 @@
 const jobsRef = db.collection("jobs");
 const appsRef = db.collection("applications");
+const countriesRef = db.collection("countries");
 
 const jobsList = document.getElementById("jobsList");
 const appTableBody = document.querySelector("#appTable tbody");
 const searchInput = document.getElementById("searchInput");
+const jobCountry = document.getElementById("jobCountry");
 
-/* ================= ADD JOB ================= */
-async function addJob() {
-  const title = document.getElementById("jobRole").value.trim();
-  const country = document.getElementById("jobCountry").value;
-  const emergency = document.getElementById("emergency").checked;
+/* ADD COUNTRY */
+async function addCountry() {
+  const name = countryName.value.trim();
+  const code = countryCode.value.trim().toLowerCase();
+  if (!name || !code) return alert("Fill country fields");
 
-  if (!title) {
-    alert("Enter job title");
-    return;
-  }
-
-  await jobsRef.add({
-    title,
-    country,
-    emergency,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  document.getElementById("jobRole").value = "";
-  document.getElementById("emergency").checked = false;
-
-  alert("Job added");
+  await countriesRef.add({ name, code });
+  alert("Country added");
 }
 
-/* ================= LOAD JOBS ================= */
-jobsRef.orderBy("createdAt", "desc").onSnapshot(snap => {
-  jobsList.innerHTML = "";
-
-  if (snap.empty) {
-    jobsList.innerHTML = `<p class="text-muted">No jobs yet</p>`;
-    return;
-  }
-
-  snap.forEach(doc => {
-    const j = doc.data();
-    jobsList.innerHTML += `
-      <div class="card p-3" style="min-width:220px">
-        <strong>${j.title}</strong>
-        <div class="text-muted">${j.country}</div>
-        ${j.emergency ? `<span class="badge bg-danger">15 Days</span>` : ""}
-        <button class="btn btn-sm btn-outline-danger mt-2"
-          onclick="jobsRef.doc('${doc.id}').delete()">
-          Delete
-        </button>
-      </div>
-    `;
+/* LOAD COUNTRIES */
+countriesRef.onSnapshot(snap => {
+  jobCountry.innerHTML = "";
+  snap.forEach(d => {
+    const c = d.data();
+    jobCountry.innerHTML += `<option value="${c.code}">${c.name}</option>`;
   });
 });
 
-/* ================= LOAD APPLICATIONS ================= */
-appsRef.orderBy("createdAt", "desc").onSnapshot(snap => {
+/* ADD JOB */
+async function addJob() {
+  if (!jobRole.value) return alert("Enter job");
+
+  await jobsRef.add({
+    title: jobRole.value,
+    country: jobCountry.value,
+    emergency: emergency.checked,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  jobRole.value = "";
+  emergency.checked = false;
+}
+
+/* LOAD JOBS */
+jobsRef.onSnapshot(snap => {
+  jobsList.innerHTML = "";
+  snap.forEach(d => {
+    const j = d.data();
+    jobsList.innerHTML += `
+      <div class="card p-3" style="min-width:200px">
+        <b>${j.title}</b>
+        <small>${j.country}</small>
+      </div>`;
+  });
+});
+
+/* LOAD APPLICATIONS */
+appsRef.onSnapshot(snap => {
   appTableBody.innerHTML = "";
-  snap.forEach(doc => {
-    const a = doc.data();
+  snap.forEach(d => {
+    const a = d.data();
     appTableBody.innerHTML += `
       <tr>
         <td>${a.name}</td>
@@ -66,15 +66,13 @@ appsRef.orderBy("createdAt", "desc").onSnapshot(snap => {
         <td>${a.email}</td>
         <td>${a.phone}</td>
         <td>${a.country}</td>
-      </tr>
-    `;
+      </tr>`;
   });
 });
 
-/* ================= SEARCH ================= */
+/* SEARCH */
 searchInput.addEventListener("input", () => {
-  const v = searchInput.value.toLowerCase();
-  document.querySelectorAll("#appTable tbody tr").forEach(r => {
-    r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none";
-  });
+  [...appTableBody.rows].forEach(r =>
+    r.style.display = r.innerText.toLowerCase().includes(searchInput.value.toLowerCase()) ? "" : "none"
+  );
 });

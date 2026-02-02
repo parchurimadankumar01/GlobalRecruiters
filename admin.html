@@ -21,34 +21,43 @@
 
 <div class="container mt-4">
 
+<!-- ADD COUNTRY -->
+<div class="card mb-4">
+  <div class="card-header fw-bold">Add Country</div>
+  <div class="card-body row g-3">
+    <div class="col-md-5">
+      <input id="countryName" class="form-control" placeholder="Country Name (e.g. Germany)">
+    </div>
+    <div class="col-md-5">
+      <input id="countryCode" class="form-control" placeholder="Country Code (e.g. germany)">
+    </div>
+    <div class="col-md-2">
+      <button onclick="addCountry()" class="btn btn-dark w-100">Add</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADD JOB -->
 <div class="card mb-4">
   <div class="card-header fw-bold">Add Job</div>
   <div class="card-body row g-3">
 
     <div class="col-md-4">
-      <label class="form-label">Job Title</label>
-      <input id="jobRole" class="form-control">
+      <input id="jobRole" class="form-control" placeholder="Job Title">
     </div>
 
     <div class="col-md-3">
-      <label class="form-label">Country</label>
-      <select id="jobCountry" class="form-select">
-        <option value="dubai">Dubai</option>
-        <option value="saudi">Saudi</option>
-        <option value="kuwait">Kuwait</option>
-        <option value="oman">Oman</option>
-      </select>
+      <select id="jobCountry" class="form-select"></select>
     </div>
 
-    <div class="col-md-3 d-flex align-items-end">
+    <div class="col-md-3">
       <div class="form-check">
         <input id="emergency" type="checkbox" class="form-check-input">
         <label class="form-check-label">Emergency (15 Days)</label>
       </div>
     </div>
 
-    <div class="col-md-2 d-flex align-items-end">
+    <div class="col-md-2">
       <button onclick="addJob()" class="btn btn-dark w-100">Add</button>
     </div>
   </div>
@@ -62,11 +71,7 @@
 
 <!-- APPLICATIONS -->
 <div class="card">
-  <div class="card-header d-flex justify-content-between">
-    <span class="fw-bold">Applications</span>
-    <button onclick="exportExcel()" class="btn btn-success btn-sm">Export CSV</button>
-  </div>
-
+  <div class="card-header fw-bold">Applications</div>
   <div class="card-body">
     <input id="searchInput" class="form-control mb-3" placeholder="Search">
 
@@ -83,18 +88,10 @@
 
 </div>
 
-<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
-<!-- Firebase Init -->
 <script src="js/firebase.js"></script>
-
-<!-- Page Logic -->
 <script src="js/admin.js"></script>
-<!-- OR -->
-<script src="js/main.js"></script>
 
 </body>
 </html>

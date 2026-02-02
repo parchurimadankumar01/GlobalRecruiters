@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>Global Recruiters – Gulf Jobs</title>
+  <title>Global Recruiters – Jobs</title>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
   <!-- Custom CSS -->
@@ -30,24 +27,13 @@
     </button>
 
     <div class="collapse navbar-collapse" id="mainNav">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto" id="navCountries">
         <li class="nav-item">
           <a class="nav-link active" href="index.html">
             <i class="bi bi-house"></i> Home
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="country.html?country=dubai">Dubai</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="country.html?country=saudi">Saudi</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="country.html?country=kuwait">Kuwait</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="country.html?country=oman">Oman</a>
-        </li>
+        <!-- Countries will load here dynamically -->
       </ul>
     </div>
   </div>
@@ -55,46 +41,15 @@
 
 <!-- ================= HERO SECTION ================= -->
 <section class="hero-images text-center mt-3">
-  <img src="images/poster1.png" class="img-fluid m-2 rounded" alt="Gulf Jobs">
-  <img src="images/poster2.png" class="img-fluid m-2 rounded" alt="Gulf Jobs">
+  <img src="images/poster1.png" class="img-fluid m-2 rounded" alt="Jobs">
+  <img src="images/poster2.png" class="img-fluid m-2 rounded" alt="Jobs">
 </section>
 
 <!-- ================= COUNTRIES ================= -->
 <section class="section container mt-5">
   <h2 class="text-center mb-4">Hiring Countries</h2>
-
-  <div class="row g-4">
-    <div class="col-md-3">
-      <a href="country.html?country=dubai" class="text-decoration-none">
-        <div class="country-card" style="background-image:url('images/countries/dubai.jpg')">
-          <h3>Dubai</h3>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-md-3">
-      <a href="country.html?country=saudi" class="text-decoration-none">
-        <div class="country-card" style="background-image:url('images/countries/saudi.jpg')">
-          <h3>Saudi Arabia</h3>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-md-3">
-      <a href="country.html?country=kuwait" class="text-decoration-none">
-        <div class="country-card" style="background-image:url('images/countries/kuwait.jpg')">
-          <h3>Kuwait</h3>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-md-3">
-      <a href="country.html?country=oman" class="text-decoration-none">
-        <div class="country-card" style="background-image:url('images/countries/oman.jpg')">
-          <h3>Oman</h3>
-        </div>
-      </a>
-    </div>
+  <div class="row g-4" id="countryList">
+    <!-- Countries load dynamically -->
   </div>
 </section>
 
@@ -124,31 +79,24 @@
 </footer>
 
 <!-- ================= WHATSAPP FLOAT ================= -->
-<a href="https://wa.me/918328055863?text=I%20want%20to%20apply%20for%20Gulf%20job"
+<a href="https://wa.me/918328055863?text=I%20want%20to%20apply%20for%20job"
    class="whatsapp"
    target="_blank">💬</a>
 
-<!-- Firebase SDKs -->
+<!-- ================= FIREBASE ================= -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
-<!-- Firebase Init -->
 <script src="js/firebase.js"></script>
-
-<!-- Page Logic -->
-<script src="js/admin.js"></script>
-<!-- OR -->
-<script src="js/main.js"></script>
 
 <!-- ================= EMAILJS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-  (function () {
-    emailjs.init("A8NpDoj9Fe-u0VfQ3"); // ✅ your public key
-  })();
+  emailjs.init("A8NpDoj9Fe-u0VfQ3");
 </script>
 
+<!-- ================= MAIN LOGIC ================= -->
+<script src="js/main.js"></script>
 
 <!-- ================= BOOTSTRAP JS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
