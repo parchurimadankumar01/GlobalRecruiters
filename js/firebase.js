@@ -1,6 +1,4 @@
-// ==========================
-// FIREBASE CONFIGURATION
-// ==========================
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAjQU3dbUx4hyv_1RaTByPGRb3dPrYYNH8",
   authDomain: "global-recruiters-8328.firebaseapp.com",
@@ -10,22 +8,8 @@ const firebaseConfig = {
   appId: "1:51930093245:web:bb184f5028ab4b408fc9d4"
 };
 
-// ==========================
-// INITIALIZE FIREBASE
-// ==========================
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+// Init
+firebase.initializeApp(firebaseConfig);
 
-// ==========================
-// EXPORT SERVICES (GLOBAL)
-// ==========================
+// Global DB
 window.db = firebase.firestore();
-window.auth = firebase.auth();
-
-// Optional: timestamps in snapshots
-firebase.firestore().settings({
-  ignoreUndefinedProperties: true
-});
-
-console.log("🔥 Firebase initialized successfully");

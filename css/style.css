@@ -176,3 +176,14 @@ footer {
   text-decoration: none;
   box-shadow: 0 0 15px rgba(0,0,0,0.4);
 }
+
+.job-card {
+  cursor: pointer;
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .job-card {
+    min-width: 160px;
+  }
+}

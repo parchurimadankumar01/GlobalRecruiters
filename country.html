@@ -38,39 +38,63 @@
 
 
 <script>
-const params = new URLSearchParams(location.search);
-const country = params.get("country");
+document.addEventListener("DOMContentLoaded", () => {
 
-countryTitle.innerText = country.toUpperCase() + " Jobs";
+  const params = new URLSearchParams(window.location.search);
+  const country = params.get("country");
 
-db.collection("jobs")
-.where("country","==",country)
-.onSnapshot(snap=>{
-  jobList.innerHTML="";
-  snap.forEach(d=>{
-    const j=d.data();
-    jobList.innerHTML+=`
-      <div class="card p-3" style="min-width:200px;cursor:pointer"
-        onclick="job.value='${j.title}'">
-        <b>${j.title}</b>
-        ${j.emergency?'<span class="badge bg-danger">Emergency</span>':''}
-      </div>`;
+  const jobList = document.getElementById("jobList");
+  const jobInput = document.getElementById("job");
+
+  document.getElementById("countryTitle").innerText =
+    country.toUpperCase() + " Jobs";
+
+  db.collection("jobs")
+    .where("country", "==", country)
+    .onSnapshot(snapshot => {
+      jobList.innerHTML = "";
+
+      if (snapshot.empty) {
+        jobList.innerHTML = "<p>No jobs available</p>";
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        const job = doc.data();
+        jobList.innerHTML += `
+          <div class="card p-3 job-card"
+               onclick="selectJob('${job.title}')">
+            <b>${job.title}</b><br>
+            ${job.emergency ? `<span class="badge bg-danger">15 Days</span>` : ""}
+          </div>
+        `;
+      });
+    });
+
+  window.selectJob = function (title) {
+    jobInput.value = title;
+  };
+
+  document.getElementById("applyForm").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    await db.collection("applications").add({
+      name: name.value,
+      job: job.value,
+      email: email.value,
+      phone: phone.value,
+      country: country,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    alert("Application submitted");
+    location.href = "index.html";
   });
-});
 
-applyForm.addEventListener("submit",async e=>{
-  e.preventDefault();
-  await db.collection("applications").add({
-    name:name.value,
-    job:job.value,
-    email:email.value,
-    phone:phone.value,
-    country,
-    createdAt:firebase.firestore.Timestamp.now()
-  });
-  alert("Applied Successfully");
 });
 </script>
+
+
 
 </body>
 </html>
