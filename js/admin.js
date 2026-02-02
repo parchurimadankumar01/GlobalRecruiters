@@ -2,10 +2,14 @@
 // FIRESTORE REFERENCES
 // ==========================
 const jobsRef = db.collection("jobs");
+const appsRef = db.collection("applications");
+
 const jobsList = document.getElementById("jobsList");
+const appTableBody = document.querySelector("#appTable tbody");
+const searchInput = document.getElementById("searchInput");
 
 // ==========================
-// ADD JOB TO FIRESTORE
+// ADD JOB
 // ==========================
 async function addJob() {
   const role = document.getElementById("jobRole").value.trim();
@@ -13,87 +17,121 @@ async function addJob() {
   const emergency = document.getElementById("emergency").checked;
 
   if (!role) {
-    alert("Please enter Job Role");
+    alert("Enter Job Role");
     return;
   }
 
-  try {
-    await jobsRef.add({
-      title: role,
-      country: country,
-      emergency: emergency,
-      createdAt: firebase.firestore.Timestamp.now()
+  await jobsRef.add({
+    title: role,
+    country,
+    emergency,
+    createdAt: firebase.firestore.Timestamp.now()
+  });
+
+  document.getElementById("jobRole").value = "";
+  document.getElementById("emergency").checked = false;
+
+  alert("Job Added Successfully");
+}
+
+// ==========================
+// LOAD JOBS (LIVE)
+// ==========================
+function loadJobs() {
+  jobsRef.orderBy("createdAt", "desc").onSnapshot(snapshot => {
+    jobsList.innerHTML = "";
+
+    snapshot.forEach(doc => {
+      const job = doc.data();
+
+      jobsList.innerHTML += `
+        <div class="card p-3 shadow-sm" style="min-width:240px">
+          <strong>${job.title}</strong>
+          <div class="text-muted">${job.country.toUpperCase()}</div>
+
+          ${
+            job.emergency
+              ? `<span class="badge bg-danger mt-2">Emergency • 15 Days</span>`
+              : `<span class="badge bg-success mt-2">Normal</span>`
+          }
+
+          <button class="btn btn-sm btn-outline-danger mt-2"
+            onclick="deleteJob('${doc.id}')">
+            Delete
+          </button>
+        </div>
+      `;
     });
 
-    // Reset form
-    document.getElementById("jobRole").value = "";
-    document.getElementById("emergency").checked = false;
-
-    alert("Job added successfully");
-  } catch (error) {
-    console.error("Error adding job:", error);
-    alert("Failed to add job");
-  }
+    if (snapshot.empty) {
+      jobsList.innerHTML = `<p class="text-muted">No jobs yet</p>`;
+    }
+  });
 }
 
 // ==========================
 // DELETE JOB
 // ==========================
-async function deleteJob(jobId) {
-  if (!confirm("Are you sure you want to delete this job?")) return;
-
-  try {
-    await jobsRef.doc(jobId).delete();
-    alert("Job deleted");
-  } catch (error) {
-    console.error("Delete error:", error);
-    alert("Failed to delete job");
-  }
+async function deleteJob(id) {
+  if (!confirm("Delete this job?")) return;
+  await jobsRef.doc(id).delete();
 }
 
 // ==========================
-// LOAD JOBS IN ADMIN PANEL
+// LOAD APPLICATIONS
 // ==========================
-function loadJobs() {
-  jobsRef
-    .orderBy("createdAt", "desc")
-    .onSnapshot(snapshot => {
-      jobsList.innerHTML = "";
+function loadApplications() {
+  appsRef.orderBy("createdAt", "desc").onSnapshot(snapshot => {
+    appTableBody.innerHTML = "";
 
-      snapshot.forEach(doc => {
-        const job = doc.data();
+    snapshot.forEach(doc => {
+      const a = doc.data();
 
-        jobsList.innerHTML += `
-          <div class="card p-3 shadow-sm" style="min-width:240px">
-            <strong>${job.title}</strong>
-
-            <div class="text-muted mt-1">
-              ${job.country.toUpperCase()}
-            </div>
-
-            ${
-              job.emergency
-                ? `<span class="badge bg-danger mt-2">Emergency • 15 Days Visa</span>`
-                : `<span class="badge bg-success mt-2">Normal Process</span>`
-            }
-
-            <button
-              class="btn btn-sm btn-outline-danger mt-2"
-              onclick="deleteJob('${doc.id}')"
-            >
-              Delete
-            </button>
-          </div>
-        `;
-      });
-
-      if (snapshot.empty) {
-        jobsList.innerHTML = `<p class="text-muted">No jobs added yet</p>`;
-      }
+      appTableBody.innerHTML += `
+        <tr>
+          <td>${a.name}</td>
+          <td>${a.job}</td>
+          <td>${a.email}</td>
+          <td>${a.phone}</td>
+          <td>${a.country || "-"}</td>
+        </tr>
+      `;
     });
+  });
+}
+
+// ==========================
+// SEARCH APPLICATIONS
+// ==========================
+searchInput.addEventListener("input", () => {
+  const value = searchInput.value.toLowerCase();
+  document.querySelectorAll("#appTable tbody tr").forEach(row => {
+    row.style.display = row.innerText.toLowerCase().includes(value)
+      ? ""
+      : "none";
+  });
+});
+
+// ==========================
+// EXPORT EXCEL
+// ==========================
+function exportExcel() {
+  let csv = "Name,Job,Email,Phone,Country\n";
+
+  document.querySelectorAll("#appTable tbody tr").forEach(row => {
+    const cols = row.querySelectorAll("td");
+    csv += [...cols].map(c => `"${c.innerText}"`).join(",") + "\n";
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "applications.csv";
+  a.click();
 }
 
 // ==========================
 // INIT
 // ==========================
 loadJobs();
+loadApplications();
